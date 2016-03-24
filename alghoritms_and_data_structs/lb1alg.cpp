@@ -6,7 +6,8 @@ using namespace std;
 
 double calculateLibrary(double x);
 double calculateRow(double x, double e);
-double calculateGorner(double x, double e, int ecs, double result);
+double calculateGorner(double x, double e, double ecs, double result);
+double calculateGornerTime(double x, double e, double ecs, double result);
 void userInterface();
 
 
@@ -52,18 +53,25 @@ double calculateRow(double x, double e) {
     return res.count();
 }
 
-double calculateGorner(double x, double e, int ecs, double result) {
-    if(e == ecs) {
-        return result+8*x;
-    }
-    ecs*=0.1;
-    result+= x*(1-(x/2)*(calculateGorner(x, e, ecs, result)));
-    return 0;
+double calculateGorner(double x, double e, double ecs, double result) {
+	if(ecs <= e) {
+		return result+8*x;
+	}
+	return result+= x*(0.5*(calculateGorner(x, e, ecs*0.1, result)));
+}
+
+double calculateGornerTime(double x, double e, double ecs, double result) {
+    auto t1 = std::chrono::system_clock::now();
+    calculateGorner(x, e, ecs, result);
+    auto t2 = std::chrono::system_clock::now();
+    std::chrono::duration<double> res = t2-t1;
+
+    return res.count();
 }
 
 void userInterface() {
     double x, e;
-    
+    double ecs = 1;
     /*cout << "Input x: ";
     cin >> x;
     cout << "Input e: ";
@@ -75,5 +83,5 @@ void userInterface() {
     cout << "\nResult test:\n";
     cout << "Library func: " << calculateLibrary(x) << " sec.\n";
     cout << "Row func: " << calculateRow(x,e) << " sec.\n";
-    cout << "Gorner func: " << calculateGorner(x, e, 0, 0) << " sec.\n";
+    cout << "Gorner func: " << calculateGornerTime(x, e, ecs, 0) << " sec.\n";
 }
