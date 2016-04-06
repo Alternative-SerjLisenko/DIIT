@@ -72,13 +72,20 @@ double calculateGornerTime(double x, double e, double ecs, double result) {
 void userInterface() {
     double x, e;
     double ecs = 1;
-    /*cout << "Input x: ";
-    cin >> x;
-    cout << "Input e: ";
-    cin >> e;*/
-    x = 10;
-    e = 0.00001;
+    bool condition = false;
+    while(!condition) {
+        cout << "Input x: ";
+        cin >> x;
+    }
     
+    cout << "Input e: ";
+    cin >> e;
+    if(x == 1) {
+        return 0;
+    }
+    if(x == 0) {
+        return 1;
+    }
     //Output result 3 func in nanosec
     cout << "\nResult test:\n";
     cout << "Library func: " << calculateLibrary(x) << " sec.\n";
