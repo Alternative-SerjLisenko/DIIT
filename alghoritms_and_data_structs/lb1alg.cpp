@@ -8,7 +8,7 @@ double calculateLibrary(double x);
 double calculateRow(double x, double e);
 double calculateGorner(double x, double e, double ecs, double result);
 double calculateGornerTime(double x, double e, double ecs, double result);
-void userInterface();
+int userInterface();
 
 
 
@@ -69,26 +69,36 @@ double calculateGornerTime(double x, double e, double ecs, double result) {
     return res.count();
 }
 
-void userInterface() {
+int userInterface() {
     double x, e;
     double ecs = 1;
+
     bool condition = false;
     while(!condition) {
         cout << "Input x: ";
         cin >> x;
+        if((x < -1) || (x > 1)) {
+            cout << "Warning x is out of range!";   
+        } else {
+            condition = true;
+        }
     }
     
     cout << "Input e: ";
     cin >> e;
     if(x == 1) {
-        return 0;
+        cout << "Result = 8";
+        return 8;
     }
     if(x == 0) {
-        return 1;
+        cout << "Result = 0";
+        return 0;
     }
     //Output result 3 func in nanosec
     cout << "\nResult test:\n";
     cout << "Library func: " << calculateLibrary(x) << " sec.\n";
     cout << "Row func: " << calculateRow(x,e) << " sec.\n";
     cout << "Gorner func: " << calculateGornerTime(x, e, ecs, 0) << " sec.\n";
+
+    return 0;
 }
