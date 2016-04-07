@@ -1,35 +1,62 @@
 #include <iostream>
 #include <cstdlib>
+#include <chrono>
 #include <ctime>
 
 using namespace std;
 
-void generateArray(int N, int *arr);
-void outputArray(int N, int *arr);
-void sortSelectionLeftToRight(int N, int *arr);
-void sortSelectionRightToLeft(int N, int *arr);
-void heapSort_ShiftDown(int *arr, int i, int j);
-void heapSort(int N, int *arr);
-void sortBubble(int N, int *arr);
+void generateArray(int n, int *arr);
+void outputArray(int n, int *arr);
+void copyArray(int n, int *arr);
+double sortSelectionLeftToRight(int n, int *arr);
+double sortSelectionRightToLeft(int n, int *arr);
+double sortHybrid(int n, int *arr);
+double sortBubble(int n, int *arr);
 void IUserInterface();
+void testing();
 
-void generateArray(int N, int *arr) {
+void generateArray(int n, int *arr) {
+	srand (time(NULL));
+	int j = 0;
+	bool check = false;
+	for (int i = 0; i < n; i++) {
+		int temp = 0;
+		arr[i] = rand() % n + 1;
+		while(i != j) {
+			if(arr[i] == arr[j]) {
+				arr[i] = rand() % n + 1;
+			} else {
+				j++;
+			}
+		}
+	}
+}
+
+
+/*void generateArray(int N, int *arr) {
 	srand (time(NULL));
 	for (int i = 0; i < N; ++i) {
 		arr[i] = rand() % N + 1;
 	}
-}
+}*/
 
-void outputArray(int N, int *arr) {
-	for (int i = 0; i < N; ++i) {
+void outputArray(int n, int *arr) {
+	for (int i = 0; i < n; ++i) {
 		cout << " " << arr[i];
 	}
 }
 
-void sortSelectionLeftToRight(int N, int *arr) {
-	for (int min = 0; min < N-1; min++) {
+void copyArray(int n, int *arr, int *&copy_arr) {
+	for (int i = 0; i < n; i++) {
+		copy_arr[i] = arr[i];
+	}
+}
+
+double sortSelectionLeftToRight(int n, int *arr) {
+	auto t1 = std::chrono::system_clock::now();
+	for (int min = 0; min < n-1; min++) {
 		int least = min;
-		for (int j = min+1; j < N-1; j++) {
+		for (int j = min+1; j < n; j++) {
 			if(arr[j] < arr[least]) {
 				least = j;
 			}
@@ -38,12 +65,16 @@ void sortSelectionLeftToRight(int N, int *arr) {
 		arr[min] = arr[least];
 		arr[least] = tmp;
 	}
+	auto t2 = std::chrono::system_clock::now();
+	std::chrono::duration<double> res = t2-t1;
+	return res.count();
 }
 
-void sortSelectionRightToLeft(int N, int *arr) {
-	for (int min = 0; min < N-1; min++) {
+double sortSelectionRightToLeft(int n, int *arr) {
+	auto t1 = std::chrono::system_clock::now();
+	for (int min = 0; min < n-1; min++) {
 		int least = min;
-		for (int j = min+1; j < N-1; j++) {
+		for (int j = min+1; j < n; j++) {
 			if(arr[j] > arr[least]) {
 				least = j;
 			}
@@ -52,45 +83,15 @@ void sortSelectionRightToLeft(int N, int *arr) {
 		arr[min] = arr[least];
 		arr[least] = tmp;
 	}
+	auto t2 = std::chrono::system_clock::now();
+	std::chrono::duration<double> res = t2-t1;
+	return res.count();
 }
 
-void heapSort_ShiftDown(int *arr, int i, int j) {
-	bool done = false;
-	int maxChild;
-
-	while ((i * 2 + 1 < j) && (!done)) {
-		if (i * 2 + 1 == j -1) {
-			maxChild = i * 2 + 1;
-		} else if( arr[i * 2 + 1] > arr[i * 2 + 2]) {
-			maxChild = i * 2 + 1;
-		} else {
-			maxChild = i * 2 + 2;
-		}
-
-		if( arr[i] < arr[maxChild]) {
-			swap( arr[i], arr[maxChild]);
-			i = maxChild;
-		} else {
-			done = true;
-		}
-	}
-}
-
-void heapSort(int N, int *arr) {
-	int i;
-	for (i = N / 2 - 1; i >= 0; i--) {
-		heapSort_ShiftDown(arr, i, N);
-	}
-
-	for (int i = N - 1; i >= 1; i--) {
-		swap( arr[0], arr[i]);
-		heapSort_ShiftDown( arr, 0, i);
-	}
-}
-
-void sortBubble(int N, int *arr) {
-     for (int i = 0; i < N-1; i++) {
-         for (int j = 0; j < N-i-1; j++) {
+double sortBubble(int n, int *arr) {
+	auto t1 = std::chrono::system_clock::now();
+     for (int i = 0; i < n-1; i++) {
+         for (int j = 0; j < n-i-1; j++) {
              if (arr[j] > arr[j+1]) {
                  int temp = arr[j];
                  arr[j] = arr[j+1];
@@ -98,19 +99,107 @@ void sortBubble(int N, int *arr) {
              }
          }
      }
+    auto t2 = std::chrono::system_clock::now();
+	std::chrono::duration<double> res = t2-t1;
+	return res.count();
 } 
 
+//refactor hybrid
+
+double sortHybrid(int n, int *arr) {
+	auto t1 = std::chrono::system_clock::now();
+
+	bool check = true;
+	bool searchCheck = 0;
+	int currentValue = 0;
+	int highestValueIndex = 0;
+	int lowestValueIndex = 0;
+	int highestValue = 0;
+	int lowestValue = 0;
+	int leftStep = 0;
+	int rightStep = 0;
+	int temp = 0;
+	bool hybrid = false;
+
+	while (check != false)
+	{
+		if (hybrid == false)
+		{
+			check = false;
+			searchCheck = false;
+			for (int i = leftStep; i < n; i++)
+			{
+				currentValue = arr[i];
+				if (currentValue < lowestValue || i == leftStep)
+				{
+					lowestValue = currentValue;
+					lowestValueIndex = i;
+					searchCheck = true;
+				}
+			}
+
+			if (searchCheck == true)
+			{
+				temp = arr[lowestValueIndex];
+				arr[lowestValueIndex] = arr[leftStep];
+				arr[leftStep]= temp;
+				check = true;
+			}
+
+			currentValue = 0;
+			lowestValue = 0;
+			lowestValueIndex = 0;
+			leftStep++;
+			hybrid = true;
+		}
+		if (hybrid == true)
+		{
+			check = false;
+			searchCheck = false;
+			for (int i = 0; i < n- rightStep; i++)
+			{
+				currentValue = arr[i];
+				if (currentValue > highestValue || i == 0)
+				{
+					highestValue = currentValue;
+					highestValueIndex = i;
+					searchCheck = true;
+				}
+			}
+
+			if (searchCheck == true)
+			{
+				temp = arr[highestValueIndex];
+				arr[highestValueIndex]= arr[n- rightStep - 1];
+				arr[n- rightStep - 1] = temp;
+				check = true;
+			}
+
+			currentValue = 0;
+			highestValue = 0;
+			highestValueIndex = 0;
+			rightStep++;
+			hybrid = false;
+		}
+	}
+	auto t2 = std::chrono::system_clock::now();
+	std::chrono::duration<double> res = t2-t1;
+	return res.count();
+}
+
 void IUserInterface() {
+
 	char menu = '-';
-	const int N = 56;
-	int *arr = new int[N];
+	const int n = 56;
+	int *arr = new int[n];
+	int *temp_arr = new int[n];
 	do {
 		cout << "\n\tMenu: " << endl;
 		cout << "1 | generate array" << endl;
 		cout << "2 | output array" << endl;
 		cout << "3 | sort selection ~ left to right" << endl;
 		cout << "4 | sort selection ~ right to left" << endl;
-		cout << "5 | sort heap sort" << endl;
+		cout << "5 | sort hybrid" << endl;
 		cout << "6 | sort bubble" << endl;
 		cout << "0 | exit" << endl;
 		cout << "\nChose menu item: ";
@@ -118,27 +207,35 @@ void IUserInterface() {
 			switch(menu) {
 
 				case '1':
-					generateArray(N, arr);
+					generateArray(n, arr);
 				break;
 
 				case '2':
-					outputArray(N, arr);
+					outputArray(n, arr);
 				break;
 
 				case '3':
-					sortSelectionLeftToRight(N, arr);
+					copyArray(n, arr, temp_arr);
+					sortSelectionLeftToRight(n, temp_arr);
+					outputArray(n, temp_arr);
 				break;
 
 				case '4':
-					sortSelectionRightToLeft(N, arr);
+					copyArray(n, arr, temp_arr);
+					sortSelectionRightToLeft(n, temp_arr);
+					outputArray(n, temp_arr);
 				break;
 
 				case '5':
-					heapSort(N, arr);
+					copyArray(n, arr, temp_arr);
+					sortHybrid(n, temp_arr);
+					outputArray(n, temp_arr);
 				break;
 
 				case '6':
-					sortBubble(N, arr);
+					copyArray(n, arr, temp_arr);
+					sortBubble(n, temp_arr);
+					outputArray(n, temp_arr);
 				break;
 
 				case '0':

@@ -10,8 +10,6 @@ double calculateGorner(double x, double e, double ecs, double result);
 double calculateGornerTime(double x, double e, double ecs, double result);
 int userInterface();
 
-
-
 int main() {
 	userInterface();
 	return 0;
@@ -64,7 +62,7 @@ double calculateGornerTime(double x, double e, double ecs, double result) {
     auto t1 = std::chrono::system_clock::now();
     calculateGorner(x, e, ecs, result);
     auto t2 = std::chrono::system_clock::now();
-    std::chrono::duration<double> res = t2-t1;
+    std::chrono::duration<double> res = t2-t1;             
 
     return res.count();
 }
@@ -87,11 +85,11 @@ int userInterface() {
     cout << "Input e: ";
     cin >> e;
     if(x == 1) {
-        cout << "Result = 8";
-        return 8;
+        cout << "Result = " << 8*x;
+        return 8*x;
     }
     if(x == 0) {
-        cout << "Result = 0";
+        cout << "Result " << 0;
         return 0;
     }
     //Output result 3 func in nanosec
